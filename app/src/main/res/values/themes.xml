@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.SMOOTH" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/smooth_background</item>
+        <item name="android:statusBarColor">@color/smooth_background</item>
+    </style>
+</resources>

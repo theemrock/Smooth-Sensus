@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_spike_service_label">Smooth Dialogue Accessibility Spike</string>
+    <string name="accessibility_spike_service_description">Disposable native accessibility executor spike.</string>
+</resources>
