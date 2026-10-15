@@ -30,8 +30,39 @@ android {
         }
     }
 
+    signingConfigs {
+        create("smoothRelease") {
+            val signingKeys = listOf(
+                "SMOOTH_SIGNING_STORE_FILE",
+                "SMOOTH_SIGNING_STORE_PASSWORD",
+                "SMOOTH_SIGNING_KEY_ALIAS",
+                "SMOOTH_SIGNING_KEY_PASSWORD"
+            )
+            val signingValues = signingKeys.associateWith {
+                providers.environmentVariable(it).orNull
+            }
+            val configured = signingValues.values.any { !it.isNullOrBlank() }
+
+            if (configured) {
+                signingKeys.forEach { name ->
+                    require(!signingValues[name].isNullOrBlank()) {
+                        "Missing signing environment variable: $name"
+                    }
+                }
+                val path = signingValues.getValue("SMOOTH_SIGNING_STORE_FILE")!!
+                require(file(path).isFile) {
+                    "Release keystore file not found"
+                }
+                storeFile = file(path)
+                storePassword = signingValues.getValue("SMOOTH_SIGNING_STORE_PASSWORD")
+                keyAlias = signingValues.getValue("SMOOTH_SIGNING_KEY_ALIAS")
+                keyPassword = signingValues.getValue("SMOOTH_SIGNING_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("smoothRelease")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
