@@ -56,7 +56,7 @@ jobs:
           APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
           test -n "$APKSIGNER"
           "$APKSIGNER" verify --print-certs "$APK"
-          ACTUAL="$("$APKSIGNER" verify --print-certs "$APK" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | tr -d '\r' | tr '[:upper:]' '[:lower:]')"
+          ACTUAL="$("$APKSIGNER" verify --print-certs "$APK" | sed -n -E 's/^(V[0-9]+ Signer|Signer #[0-9]+):? certificate SHA-256 digest: //p' | tr -d '\r' | tr '[:upper:]' '[:lower:]')"
           EXPECTED="aae94f1d5de956e242ddfe7515ae8684600fc47c772bb4b3fb97d31c54f9d93c"
           test "$ACTUAL" = "$EXPECTED"
 
