@@ -171,6 +171,7 @@ class BridgeExecutor(
         body.addProperty("finishReason", metrics.terminationReason.name)
         body.add("metrics", JsonObject().apply {
             addProperty("promptTokens", metrics.promptTokenCount)
+            addProperty("promptEvalMs", metrics.promptEvalDurationMs)
             addProperty("generatedTokens", metrics.generatedTokenCount)
             addProperty("tokensPerSecond", metrics.generationTokensPerSecond)
             addProperty("inferenceMs", metrics.totalInferenceDurationMs)
@@ -190,6 +191,6 @@ class BridgeExecutor(
     }
 
     private fun structuredPrompt(request: BridgeRequest.Structured) =
-        "Aşağıdaki Türkçe komutu, verilen JSON Schema'ya uyan tek bir JSON değerine dönüştür. Yalnızca JSON üret.\n" +
+        "Türkçe komutu şemaya uyan tek bir JSON'a çevir. Komutla ilgili tüm alanları doldur, alakasız alan ekleme. Yalnızca JSON üret.\n" +
             "Şema: ${request.schema}\nKomut: ${request.command}"
 }

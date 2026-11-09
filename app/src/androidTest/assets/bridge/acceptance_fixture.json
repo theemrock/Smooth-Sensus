@@ -1,0 +1,60 @@
+{
+  "maxTokens": 128,
+  "schemas": {
+    "flat": {
+      "type": "object",
+      "properties": {
+        "intent": {
+          "type": "string",
+          "enum": ["alarm", "timer", "reminder", "open_app", "calendar_event", "note", "flashlight", "dnd", "volume", "sms", "other"]
+        },
+        "time": { "type": "string", "description": "HH:MM, 24 saat" },
+        "durationMinutes": { "type": "integer" },
+        "text": { "type": "string" },
+        "app": { "type": "string" },
+        "contact": { "type": "string" },
+        "enabled": { "type": "boolean", "description": "açmak için true, kapatmak için false" },
+        "level": { "type": "integer", "description": "0-100" }
+      },
+      "required": ["intent"],
+      "additionalProperties": false
+    },
+    "perIntent": {
+      "oneOf": [
+        { "type": "object", "properties": { "intent": { "const": "alarm" }, "time": { "type": "string", "description": "HH:MM, 24 saat" } }, "required": ["intent", "time"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "timer" }, "durationMinutes": { "type": "integer" } }, "required": ["intent", "durationMinutes"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "reminder" }, "time": { "type": "string", "description": "HH:MM, 24 saat" }, "text": { "type": "string" } }, "required": ["intent", "time", "text"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "open_app" }, "app": { "type": "string" } }, "required": ["intent", "app"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "calendar_event" }, "time": { "type": "string", "description": "HH:MM, 24 saat" }, "text": { "type": "string" } }, "required": ["intent", "time", "text"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "note" }, "text": { "type": "string" } }, "required": ["intent", "text"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "flashlight" }, "enabled": { "type": "boolean", "description": "açmak için true, kapatmak için false" } }, "required": ["intent", "enabled"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "dnd" }, "enabled": { "type": "boolean", "description": "açmak için true, kapatmak için false" } }, "required": ["intent", "enabled"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "volume" }, "level": { "type": "integer", "description": "0-100" } }, "required": ["intent", "level"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "sms" }, "contact": { "type": "string" }, "text": { "type": "string" } }, "required": ["intent", "contact", "text"], "additionalProperties": false },
+        { "type": "object", "properties": { "intent": { "const": "other" } }, "required": ["intent"], "additionalProperties": false }
+      ]
+    }
+  },
+  "cases": [
+    { "command": "Sabah 7'ye alarm kur", "intent": "alarm", "fields": { "time": "07:00" } },
+    { "command": "Akşam 6.30 için alarm ayarla", "intent": "alarm", "fields": { "time": "18:30" } },
+    { "command": "Beni sabah 5'te uyandır", "intent": "alarm", "fields": { "time": "05:00" } },
+    { "command": "10 dakikalık zamanlayıcı başlat", "intent": "timer", "fields": { "durationMinutes": 10 } },
+    { "command": "Yarım saat sonra çalacak bir sayaç kur", "intent": "timer", "fields": { "durationMinutes": 30 } },
+    { "command": "Bana saat 15:00'te ilaç içmeyi hatırlat", "intent": "reminder", "fields": { "time": "15:00", "text": { "contains": "ilaç" } } },
+    { "command": "Akşam 8'de annemi aramayı hatırlat", "intent": "reminder", "fields": { "time": "20:00", "text": { "contains": "anne" } } },
+    { "command": "WhatsApp'ı aç", "intent": "open_app", "fields": { "app": { "contains": "whatsapp" } } },
+    { "command": "Kamerayı aç", "intent": "open_app", "fields": { "app": { "contains": "kamera" } } },
+    { "command": "Spotify'ı başlat", "intent": "open_app", "fields": { "app": { "contains": "spotify" } } },
+    { "command": "Cuma günü saat 14:00'te diş doktoru randevusu ekle", "intent": "calendar_event", "fields": { "time": "14:00", "text": { "contains": "diş" } } },
+    { "command": "Yarın 10:00'a toplantı koy", "intent": "calendar_event", "fields": { "time": "10:00", "text": { "contains": "toplantı" } } },
+    { "command": "Not al: süt, ekmek, yumurta", "intent": "note", "fields": { "text": { "contains": "süt" } } },
+    { "command": "Not defterime yaz: sunumu hazırla", "intent": "note", "fields": { "text": { "contains": "sunum" } } },
+    { "command": "Feneri aç", "intent": "flashlight", "fields": { "enabled": true } },
+    { "command": "Feneri kapat", "intent": "flashlight", "fields": { "enabled": false } },
+    { "command": "Rahatsız etme modunu aç", "intent": "dnd", "fields": { "enabled": true } },
+    { "command": "Ses düzeyini yüzde 50 yap", "intent": "volume", "fields": { "level": 50 } },
+    { "command": "Ayşe'ye 'geliyorum' diye mesaj gönder", "intent": "sms", "fields": { "contact": { "contains": "ayşe" }, "text": { "contains": "geliyorum" } } },
+    { "command": "Bugün hava nasıl olacak?", "intent": "other", "fields": {} }
+  ]
+}
