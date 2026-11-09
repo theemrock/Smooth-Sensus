@@ -30,19 +30,19 @@ android {
         }
     }
 
+    val signingKeys = listOf(
+        "SMOOTH_SIGNING_STORE_FILE",
+        "SMOOTH_SIGNING_STORE_PASSWORD",
+        "SMOOTH_SIGNING_KEY_ALIAS",
+        "SMOOTH_SIGNING_KEY_PASSWORD"
+    )
+    val signingValues = signingKeys.associateWith {
+        providers.environmentVariable(it).orNull
+    }
+    val configured = signingValues.values.any { !it.isNullOrBlank() }
+
     signingConfigs {
         create("smoothRelease") {
-            val signingKeys = listOf(
-                "SMOOTH_SIGNING_STORE_FILE",
-                "SMOOTH_SIGNING_STORE_PASSWORD",
-                "SMOOTH_SIGNING_KEY_ALIAS",
-                "SMOOTH_SIGNING_KEY_PASSWORD"
-            )
-            val signingValues = signingKeys.associateWith {
-                providers.environmentVariable(it).orNull
-            }
-            val configured = signingValues.values.any { !it.isNullOrBlank() }
-
             if (configured) {
                 signingKeys.forEach { name ->
                     require(!signingValues[name].isNullOrBlank()) {
@@ -61,6 +61,10 @@ android {
         }
     }
     buildTypes {
+        // One shared SMOOTH certificate on device when the env vars are set; otherwise the local debug key.
+        if (configured) {
+            getByName("debug").signingConfig = signingConfigs.getByName("smoothRelease")
+        }
         release {
             signingConfig = signingConfigs.getByName("smoothRelease")
             isMinifyEnabled = false
@@ -72,7 +76,7 @@ android {
         create("benchmark") {
             initWith(getByName("release"))
             isDebuggable = true
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(if (configured) "smoothRelease" else "debug")
             matchingFallbacks += listOf("release", "debug")
             externalNativeBuild {
                 cmake {
