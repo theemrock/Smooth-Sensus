@@ -1,5 +1,5 @@
 param(
-    [string]$Source = (Join-Path $PSScriptRoot '..\artwork\smooth-dialogue-launcher.png')
+    [string]$Source = (Join-Path $PSScriptRoot '..\artwork\smooth-sensus-launcher.png')
 )
 
 # Mechanical scaling/padding only. The supplied source artwork is never distorted.
@@ -63,8 +63,8 @@ try {
     # circular and squircle masks. The remaining area is a neutral dark backdrop.
     $foregroundDirectory = Join-Path $resourceRoot 'drawable-nodpi'
     New-Item -ItemType Directory -Path $foregroundDirectory -Force | Out-Null
-    Save-ScaledArtwork 432 (46.0 / 108.0) (Join-Path $foregroundDirectory 'smooth_dialogue_launcher_foreground.png') $true
-    Save-MonochromeArtwork 432 (46.0 / 108.0) (Join-Path $foregroundDirectory 'smooth_dialogue_launcher_monochrome.png')
+    Save-ScaledArtwork 432 (46.0 / 108.0) (Join-Path $foregroundDirectory 'smooth_sensus_launcher_foreground.png') $true
+    Save-MonochromeArtwork 432 (46.0 / 108.0) (Join-Path $foregroundDirectory 'smooth_sensus_launcher_monochrome.png')
     $densities = @{ 'mdpi' = 48; 'hdpi' = 72; 'xhdpi' = 96; 'xxhdpi' = 144; 'xxxhdpi' = 192 }
     foreach ($density in $densities.Keys) {
         $directory = Join-Path $resourceRoot "mipmap-$density"
@@ -75,5 +75,5 @@ try {
             if (Test-Path -LiteralPath $oldAsset) { Remove-Item -LiteralPath $oldAsset }
         }
     }
-    Write-Host "Generated Smooth Dialogue adaptive, monochrome, and five-density legacy icons from $Source"
+    Write-Host "Generated Smooth Sensus adaptive, monochrome, and five-density legacy icons from $Source"
 } finally { $artwork.Dispose() }

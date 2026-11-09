@@ -1,7 +1,7 @@
-# Smooth Dialogue Working Rules
+# Smooth Sensus Working Rules
 
-- Product name: Smooth Dialogue. The package, namespace, and application ID `com.theemrock.smooth.dialogue` are the primary app identity; the repository folder is `SmoothDialogue`.
-- Smooth Dialogue is a member of the broader SMOOTH product family. Learn & Scenario remains a module inside this app, not a separate product.
+- Product name: Smooth Sensus. The package, namespace, and application ID `com.theemrock.smooth.sensus` are the primary app identity; the repository folder is `SmoothSensus`.
+- Smooth Sensus is a member of the broader SMOOTH product family. Learn & Scenario remains a module inside this app, not a separate product.
 - Preserve milestone boundaries. Do not create empty future modules, screens, or abstractions, and do not rewrite working code merely for architectural cleanliness.
 - AI-suggested capabilities are never automatically `TECHNICALLY_VERIFIED`.
 - Normalization does not select providers. The resolver does not interpret natural language.

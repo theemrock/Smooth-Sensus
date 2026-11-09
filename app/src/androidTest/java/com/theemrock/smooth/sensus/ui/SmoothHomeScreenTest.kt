@@ -25,7 +25,7 @@ class SmoothHomeScreenTest {
             )
         }
 
-        composeRule.onNodeWithText("Smooth Dialogue").assertIsDisplayed()
+        composeRule.onNodeWithText("Smooth Sensus").assertIsDisplayed()
         composeRule.onNodeWithText("Learn & Scenario").performClick()
         composeRule.onNodeWithText("Chat").performClick()
         composeRule.onNodeWithText("Hakkında").performClick()
@@ -39,7 +39,7 @@ class SmoothHomeScreenTest {
     fun aboutShowsProductionIdentity() {
         composeRule.setContent { AboutScreen(onBack = {}) }
 
-        composeRule.onNodeWithText("Smooth Dialogue").assertIsDisplayed()
+        composeRule.onNodeWithText("Smooth Sensus").assertIsDisplayed()
         composeRule.onNodeWithText("Sürüm 0.0.6 (6)").assertIsDisplayed()
         composeRule.onNodeWithText("com.theemrock.smooth.sensus").assertIsDisplayed()
         composeRule.onNodeWithText("Yerel çıkarım llama.cpp ile sağlanır.").assertIsDisplayed()

@@ -155,6 +155,6 @@ class SmoothAccessibilitySpikeService : AccessibilityService() {
             contentDescriptions = setOf("Yüklü uygulamalar", "Installed apps"),
             texts = setOf("Yüklü uygulamalar", "Installed apps"),
         )
-        val EXPECTED_TEXTS = setOf("Smooth Dialogue Accessibility Spike")
+        val EXPECTED_TEXTS = setOf("Smooth Sensus Accessibility Spike")
     }
 }

@@ -5,7 +5,7 @@ import org.junit.Test
 
 class AppIdentityTest {
     @Test
-    fun usesSmoothDialogueApplicationId() {
+    fun usesSmoothSensusApplicationId() {
         assertEquals("com.theemrock.smooth.sensus", BuildConfig.APPLICATION_ID)
     }
 }
