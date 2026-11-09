@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "SmoothSensus"
 include(":app")
+include(":smooth-bridge")
