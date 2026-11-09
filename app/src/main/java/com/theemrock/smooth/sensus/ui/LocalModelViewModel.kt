@@ -328,7 +328,7 @@ class LocalModelViewModel internal constructor(
     override fun onCleared() { operationJob?.cancel(); super.onCleared() }
 
     companion object {
-        private const val PREFERENCES_NAME = "local_model_selection"
+        const val PREFERENCES_NAME = "local_model_selection"
         const val GRAMMAR_PROMPT = "Return an acknowledgement."
         const val GRAMMAR_EXPECTED_OUTPUT = "{\"ok\":true}"
         const val GENERIC_JSON_GRAMMAR = "root ::= \"{\\\"ok\\\":true}\""

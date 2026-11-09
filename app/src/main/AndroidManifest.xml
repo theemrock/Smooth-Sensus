@@ -28,6 +28,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".bridge.SmoothBridgeService"
+            android:exported="true"
+            android:permission="com.theemrock.smooth.permission.BRIDGE" />
     </application>
 
 </manifest>

@@ -1,7 +1,15 @@
 package com.theemrock.smooth.sensus.inference
 
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+
+/** Coroutine-context marker identifying the owner of a runtime call for [LocalModelRuntimeBoundary.cancelGeneration]. */
+class GenerationTag : AbstractCoroutineContextElement(Key) {
+    companion object Key : CoroutineContext.Key<GenerationTag>
+}
 
 data class ActiveModel(
     val displayName: String,
@@ -31,6 +39,8 @@ interface LocalModelRuntimeBoundary {
         return result
     }
     fun cancelGeneration(): Boolean = false
+    /** Cancels only if the generation currently running belongs to [tag]; queued or foreign work is untouched. */
+    fun cancelGeneration(tag: GenerationTag): Boolean = false
     suspend fun generateWithMaxTokens(prompt: String, grammar: String? = null, enableThinking: Boolean = false, maxTokens: Int): InferenceResult = generate(prompt, grammar, enableThinking)
     suspend fun generateChat(messages: List<InferenceChatMessage>, enableThinking: Boolean = false, maxTokens: Int = 256): InferenceResult =
         generate(messages.last().content, enableThinking = enableThinking)
@@ -48,6 +58,9 @@ class LocalModelRuntime(
 
     @Volatile
     private var active: ActiveModel? = null
+
+    @Volatile
+    private var runningTag: GenerationTag? = null
 
     override suspend fun switchTo(storedModel: StoredModel): ActiveModel = operationMutex.withLock {
         engine?.close()
@@ -67,8 +80,14 @@ class LocalModelRuntime(
         }
     }
 
+    // Records which tagged caller owns the running generation, so a queued caller cannot cancel someone else's.
+    private suspend inline fun <T> locked(block: () -> T): T = operationMutex.withLock {
+        runningTag = currentCoroutineContext()[GenerationTag]
+        try { block() } finally { runningTag = null }
+    }
+
     override suspend fun generate(prompt: String, grammar: String?, enableThinking: Boolean): InferenceResult =
-        operationMutex.withLock {
+        locked {
             val current = checkNotNull(engine) { "No local model is active" }
             current.generate(prompt, grammar, enableThinking)
         }
@@ -78,7 +97,7 @@ class LocalModelRuntime(
         enableThinking: Boolean,
         maxTokens: Int,
         onChunk: InferenceTextChunkCallback
-    ): InferenceResult = operationMutex.withLock {
+    ): InferenceResult = locked {
         val current = checkNotNull(engine) { "No local model is active" }
         current.generateChatStreaming(messages, enableThinking, maxTokens, onChunk)
     }
@@ -86,12 +105,14 @@ class LocalModelRuntime(
     // Deliberately bypasses operationMutex so cancellation can reach an active generation.
     override fun cancelGeneration(): Boolean = engine?.cancelGeneration() ?: false
 
-    override suspend fun generateChat(messages: List<InferenceChatMessage>, enableThinking: Boolean, maxTokens: Int): InferenceResult = operationMutex.withLock {
+    override fun cancelGeneration(tag: GenerationTag): Boolean = runningTag === tag && cancelGeneration()
+
+    override suspend fun generateChat(messages: List<InferenceChatMessage>, enableThinking: Boolean, maxTokens: Int): InferenceResult = locked {
         val current = checkNotNull(engine) { "Etkin yerel model yok" }
         current.generateChat(messages, enableThinking, maxTokens)
     }
 
-    override suspend fun generateWithMaxTokens(prompt: String, grammar: String?, enableThinking: Boolean, maxTokens: Int): InferenceResult = operationMutex.withLock {
+    override suspend fun generateWithMaxTokens(prompt: String, grammar: String?, enableThinking: Boolean, maxTokens: Int): InferenceResult = locked {
         val current = checkNotNull(engine) { "Etkin yerel model yok" }
         current.generateWithMaxTokens(prompt, grammar, enableThinking, maxTokens)
     }

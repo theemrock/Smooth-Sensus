@@ -101,6 +101,9 @@ class LlamaCppInferenceEngine internal constructor(
     }
 }
 
+/** Converts a JSON Schema to GBNF with the pinned llama.cpp converter; throws on invalid or unsupported schemas. */
+fun jsonSchemaToGrammar(schema: String): String = JniLlamaCppNativeBridge.schemaToGrammar(schema)
+
 internal interface LlamaCppNativeBridge {
     fun load(config: LlamaCppConfig): Long
     fun generate(handle: Long, prompt: String, grammar: String?, enableThinking: Boolean): InferenceResult
@@ -166,6 +169,10 @@ private object JniLlamaCppNativeBridge : LlamaCppNativeBridge {
     override fun cancelGeneration(handle: Long): Boolean = nativeCancelGeneration(handle)
 
     override fun release(handle: Long) = nativeRelease(handle)
+
+    fun schemaToGrammar(schema: String): String = nativeSchemaToGrammar(schema)
+
+    private external fun nativeSchemaToGrammar(schema: String): String
 
     private external fun nativeLoad(
         modelPath: String,

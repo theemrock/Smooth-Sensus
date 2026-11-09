@@ -15,6 +15,7 @@
 #include "llama.h"
 #include "chat.h"
 #include "ggml-backend.h"
+#include "json-schema-to-grammar.h"
 
 namespace {
 
@@ -748,6 +749,24 @@ Java_com_theemrock_smooth_sensus_inference_JniLlamaCppNativeBridge_nativeGenerat
         return nullptr;
     } catch (...) {
         throw_native_failure(env, "Unknown native streaming generation failure");
+        return nullptr;
+    }
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_theemrock_smooth_sensus_inference_JniLlamaCppNativeBridge_nativeSchemaToGrammar(
+    JNIEnv * env,
+    jobject,
+    jstring schema
+) {
+    try {
+        const std::string schema_text = jstring_to_utf8(env, schema, "Schema");
+        return new_utf8_string(env, json_schema_to_grammar(common_json::parse(schema_text)));
+    } catch (const std::exception & error) {
+        throw_native_failure(env, error.what());
+        return nullptr;
+    } catch (...) {
+        throw_native_failure(env, "Unknown schema conversion failure");
         return nullptr;
     }
 }
